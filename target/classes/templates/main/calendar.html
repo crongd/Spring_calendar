@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset='utf-8' />
+    <title>일정</title>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales-all.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/53e865f4e7.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/calendar.css}" >
+    <script th:src="@{/js/main/calendar.js}" defer></script>
+
+    <script th:inline="javascript">
+        var calendar = null;
+        var groupNo = "0";
+
+        if([[${groupNo}]] !== null){
+            groupNo = [[${groupNo}]];
+        }
+        let belongGroupX = [[${belongGroup}]];
+    </script>
+
+</head>
+<body>
+<main>
+    <section id="leftInfo">
+        <div class="container">
+            <div class="weather">
+                <span class="CurrIcon"></span>
+                <span class="CurrTemp"></span>
+                <div class="City"></div>
+            </div>
+            <div class="main_date">
+                <div class="y"></div>
+                <span class="m"></span>
+                <span class="d"></span>
+            </div>
+        </div>
+
+        <div id="user">
+            <form action="/user/change_img" method="post" enctype="multipart/form-data" id="profile-input-form" >
+                <input type="file" th:name="data" hidden/>
+            </form>
+            <div><span id="profile" th:text="${session.loginedUser.getId()}"></span><span id="profile_word"> 님, 환영합니다</span></div>
+            <div id="userPhoto"><img onclick="change_image()" id="fileName" width="100%" height="100%" th:src="@{/user/profile_download/}" alt="프로필 이미지"></div>
+            <div id="buttons">
+                <button type="submit" onclick="location.href='/user/logout'">로그아웃</button>
+                <button type="submit" onclick="location.href='/user/delete'">회원탈퇴</button>
+            </div>
+            <div id="colorBox">
+                <label><input name="color" class="color" value="red" type="radio">Red</label>
+                <label><input name="color" class="color" value="blue" type="radio">Blue</label> <br>
+                <label><input name="color" class="color" value="green" type="radio">Green</label>
+                <label><input name="color" class="color" value="violet" type="radio" >Violet</label> <br>
+                <label><input name="color" class="color" value="orange" type="radio" >Orange</label>
+                <label><input name="color" class="color" checked value="nomal" type="radio" >Nomal</label>
+            </div>
+        </div>
+        <div id="list1">
+            <div class="list_name" onclick="direct_group(-1)">개인</div>
+            <ul class="lists" >
+                <li th:each="calendarDTO : ${selectedList}">
+                    <div class="plist_name" th:text="${calendarDTO.title}"></div>
+                    <div class="plist_date" th:text="${#temporals.format(calendarDTO.start,'yyyy-MM-dd')} + ' ~ ' + ${#temporals.format(calendarDTO.end,'yyyy-MM-dd')}"></div>
+                </li>
+            </ul>
+        </div>
+        <div id="list2">
+            <div class="list_name">그룹</div>
+            <ul class="lists">
+                <li class="grp" th:each="groupDTO : ${belongGroup}" th:text="${groupDTO.groupName}" th:attr="onclick=|direct_group('${groupDTO.groupNo}')|"></li>
+            </ul>
+            <div id="grp_buttons">
+                <button id="add" onclick="group_create()">그룹 생성하기</button>
+                <button id="invite" onclick="group_invite(groupNo)">그룹 초대하기</button>
+                <button id="out" onclick="group_secession(groupNo)">그룹 탈퇴하기</button>
+            </div>
+        </div>
+    </section>
+    <div id='calendar'></div>
+</main>
+</body>
+</html>

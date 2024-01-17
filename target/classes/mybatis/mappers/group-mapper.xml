@@ -1,0 +1,56 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.board.mappers.GroupMapper">
+
+<!--    그룹 생성-->
+    <insert id="group_create" parameterType="GroupDTO" >
+        INSERT INTO `group` VALUES ( NULL, #{groupName}, #{createIdNo} )
+    </insert>
+
+<!-- 그룹 생성자 user_group넣기 -->
+    <insert id="user_group_insert" parameterType="GroupDTO">
+        <selectKey keyProperty="groupNo" order="BEFORE" resultType="int">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO `user_group` VALUES (NULL, #{createIdNo}, #{groupNo} )
+    </insert>
+
+<!--    그룹 삭제-->
+    <delete id="group_delete" parameterType="int">
+        DELETE FROM `group` WHERE `groupNo`=#{groupNo}
+    </delete>
+
+
+<!--    그룹 가입자들 번호 찾기-->
+    <select id="in_group_user_select" parameterType="GroupDTO">
+        SELECT ug.idNo FROM `group` g
+        left join `user_group` ug
+        on g.groupNo = ug.groupNo
+        Where ug.groupNo = #{groupNo};
+    </select>
+
+<!--    자신이 소속된 그룹번호 찾기-->
+    <select id="user_belong_group_select" parameterType="UserDTO">
+        SELECT g.groupNo FROM `group` g
+        left join `user_group` ug
+        on g.groupNo = ug.groupNo
+        Where ug.idNo = #{idNo};
+    </select>
+
+<!--    참여중인 그룹들 긁어오기-->
+    <select id="user_belong_groups_select" parameterType="int">
+        SELECT * FROM `group` g
+        WHERE g.groupNo = #{groupNo}
+    </select>
+
+<!--    그룹 만든 사람 idNo 찾기-->
+    <select id="group_created_idNo_select" parameterType="int">
+        SELECT createIdNo FROM `group` g
+        WHERE g.groupNo = #{groupNo}
+    </select>
+
+
+
+
+</mapper>

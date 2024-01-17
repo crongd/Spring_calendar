@@ -1,0 +1,41 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.board.mappers.CalendarMapper">
+
+
+    <insert id="save" parameterType="com.board.dto.CalendarDTO" >
+        insert into calendar(title, start, end, allday, idNo, color) values(#{title}, #{start}, #{end}, #{allDay}, #{idNo}, #{color})
+    </insert>
+
+    <insert id="save_group_data" parameterType="com.board.dto.CalendarDTO" >
+        insert into calendar(title, start, end, allday, idNo, groupNo, CalendarType, color) values(#{title}, #{start}, #{end}, #{allDay}, #{idNo} ,#{groupNo}, 'group', #{color})
+    </insert>
+
+    <delete id="delete_data" parameterType="com.board.dto.CalendarDTO" >
+        delete from calendar where title=#{title} and start=#{start};
+    </delete>
+
+    <select id="select_data" resultType="com.board.dto.CalendarDTO" >
+        select title, start, end, allday, groupNo
+        from calendar where idNo=#{idNo}
+    </select>
+
+    <select id="select_individual_data" resultType="com.board.dto.CalendarDTO" parameterType="int" >
+        select * from calendar where idNo=#{idNo} AND calendarType='individual'
+    </select>
+
+    <select id="select_group_data" resultType="com.board.dto.CalendarDTO" parameterType="GroupDTO" >
+        select * from calendar where groupNo=#{groupNo} AND calendarType='group'
+    </select>
+
+    <update id="update_data" parameterType="com.board.dto.CalendarDTO" >
+        update calendar set `start` = #{calendarDTO.start}, `end` = #{calendarDTO.end}
+        where title=#{oldCalendarDTO.title} and `start`=#{oldCalendarDTO.start} and `end`=#{oldCalendarDTO.end}
+    </update>
+    
+    <select id="select_list" resultType="com.board.dto.CalendarDTO" parameterType="int">
+        select * from calendar where curdate() <![CDATA[<]]> `end` and idNo= #{idNo} and CalendarType='individual' ORDER BY start
+    </select>
+
+</mapper>
